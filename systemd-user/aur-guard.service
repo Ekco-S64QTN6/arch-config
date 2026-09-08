@@ -1,0 +1,14 @@
+[Unit]
+Description=AUR supply-chain audit of installed foreign packages
+Documentation=https://github.com/lenucksi/aur-malware-check
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/aur-guard.sh --quiet --notify --report %S/aur-guard/last-report.txt
+# aur-guard exits 2 when it finds something. That is a normal, expected result
+# for this tool, not a service failure -- without this the unit would show up
+# permanently "failed" in systemctl --user --failed after any finding.
+SuccessExitStatus=0 2
+Nice=10
+IOSchedulingClass=idle

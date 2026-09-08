@@ -1,0 +1,13 @@
+com.discordapp.Discord
+com.github.PintaProject.Pinta
+com.google.Chrome
+com.heroicgameslauncher.hgl
+com.obsproject.Studio
+com.vysp3r.ProtonPlus
+io.github.seadve.Kooha
+io.mpv.Mpv
+net.davidotek.pupgui2
+net.lutris.Lutris
+org.chromium.Chromium
+org.garudalinux.firedragon
+org.kde.kdenlive

@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly AUR supply-chain audit
+
+[Timer]
+OnCalendar=weekly
+# Catch up on the next boot if the machine was off when it was due. The default
+# drkonqi timer on this system has Persistent=false and has literally never run.
+Persistent=true
+RandomizedDelaySec=30m
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,22 @@
+# Never commit credentials or key material.
+**/env
+**/*.env
+**/secret*
+**/id_rsa*
+**/id_ed25519*
+**/*.key
+**/*.pem
+**/known_hosts
+**/authorized_keys
+
+# Machine-specific identifiers.
+**/fstab
+**/*.link
+**/99-dying-disk-ignore.rules
+**/machine-id
+
+# Editor / OS noise.
+*~
+*.swp
+*.bak
+.DS_Store

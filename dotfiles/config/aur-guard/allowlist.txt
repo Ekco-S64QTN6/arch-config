@@ -1,0 +1,6 @@
+# aur-guard allowlist — one package name or glob per line, '#' for comments.
+# Listed packages are skipped entirely by every check, so use it only for
+# packages you have personally reviewed and trust.
+#
+# Example: a -git package you maintain awareness of yourself
+# unimatrix-git
