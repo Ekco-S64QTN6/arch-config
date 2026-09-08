@@ -133,16 +133,44 @@ check_drive() {
     [ "$err" -gt 0 ]       && info "error log entries: $err (informational)"
   else
     # --- ATA / SATA ---------------------------------------------------------
-    local found=0 id name raw
-    while IFS=$'\t' read -r id name raw; do
+    # Severity uses the vendor's own normalised scale, not just "raw > 0".
+    #
+    # A raw count above zero is not automatically critical on an SSD: these
+    # drives retire blocks as ordinary wear, and a handful out of thousands is
+    # expected. The normalised value (100 = perfect, counting down to the
+    # failure threshold) is how the vendor rates it. Reading only the raw count
+    # flagged two healthy-by-spec SSDs as CRITICAL.
+    #
+    # Pending sectors are treated more harshly than reallocated ones either way:
+    # a pending sector is a read that FAILED and has not yet been remapped, so
+    # data may already be unreadable. A reallocated sector was successfully
+    # moved.
+    local found=0 id name raw val thresh
+    while IFS=$'\t' read -r id name raw val thresh; do
       [ -z "${id:-}" ] && continue
       found=1
-      if [ -n "${CRIT_ATTRS[$id]:-}" ] && [ "$raw" -gt 0 ] 2>/dev/null; then
-        crit "${CRIT_ATTRS[$id]} (attr $id $name): ${BOLD}$raw${NC}"
-      elif [ -n "${WARN_ATTRS[$id]:-}" ] && [ "$raw" -gt 0 ] 2>/dev/null; then
-        warn "${WARN_ATTRS[$id]} (attr $id $name): $raw"
+      local label="${CRIT_ATTRS[$id]:-${WARN_ATTRS[$id]:-}}"
+      [ -z "$label" ] && continue
+      [ "$raw" -gt 0 ] 2>/dev/null || continue
+
+      local margin="n/a"
+      if [ "${val:-}" != "null" ] && [ "${thresh:-}" != "null" ] 2>/dev/null; then
+        margin="normalised ${val}, fails at ${thresh}"
       fi
-    done < <(jq -r '.ata_smart_attributes.table[]? | [(.id|tostring), .name, (.raw.value|tostring)] | @tsv' <<<"$json")
+
+      # Below or at the vendor threshold: the drive itself calls this failure.
+      if [ "${val:-999}" != "null" ] && [ "${thresh:-0}" != "null" ] \
+         && [ "$val" -le "$thresh" ] 2>/dev/null; then
+        crit "${label} (attr $id $name): raw ${BOLD}$raw${NC} — AT VENDOR FAILURE THRESHOLD ($margin)"
+      elif [ "$id" = "197" ] || [ "$id" = "198" ]; then
+        # Unreadable sectors matter regardless of headroom.
+        warn "${label} (attr $id $name): raw ${BOLD}$raw${NC} — unreadable sectors present ($margin)"
+      elif [ -n "${CRIT_ATTRS[$id]:-}" ]; then
+        info "${label} (attr $id $name): raw $raw — within vendor tolerance ($margin)"
+      else
+        warn "${label} (attr $id $name): raw $raw ($margin)"
+      fi
+    done < <(jq -r '.ata_smart_attributes.table[]? | [(.id|tostring), .name, (.raw.value|tostring), ((.value // "null")|tostring), ((.thresh // "null")|tostring)] | @tsv' <<<"$json")
     [ "$found" -eq 0 ] && warn "no ATA SMART attribute table returned"
 
     local total=0 a
@@ -150,7 +178,11 @@ check_drive() {
       raw=$(jq -r --arg i "$a" '.ata_smart_attributes.table[]? | select(.id == ($i|tonumber)) | .raw.value' <<<"$json")
       [ -n "${raw:-}" ] && total=$((total + raw))
     done
-    [ "$total" -eq 0 ] && ok "no reallocated, pending, uncorrectable or reported-uncorrectable sectors"
+    if [ "$total" -eq 0 ]; then
+      ok "no reallocated, pending, uncorrectable or reported-uncorrectable sectors"
+    else
+      info "combined reallocated+pending+uncorrectable raw count: $total (see severities above)"
+    fi
 
     local selftest
     selftest=$(jq -r '.ata_smart_self_test_log.standard.table[0].status.string // empty' <<<"$json")
