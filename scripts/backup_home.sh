@@ -3,14 +3,8 @@
 # ============================================================
 # MOUNT POINTS
 # ============================================================
-# DISABLED 2026-09-07: the drive behind this mount point (the NTFS "Steam"
-# disk) was failing SMART and is pending physical removal. Part A below stays
-# commented out until a replacement disk is installed.
-# STEAM="/run/media/ekco/Steam"
-SDB2="/run/media/ekco/Backup Linux"
-# HOME_DIR was only used by Part A, which is disabled. Restore it if you re-enable Part A.
-# HOME_DIR="/home/ekco"
-
+#GAMES="/mnt/games"
+SDB2="/mnt/backup_linux"
 # ============================================================
 # COLORS
 # ============================================================

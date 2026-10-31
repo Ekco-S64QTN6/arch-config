@@ -35,10 +35,18 @@ show_welcome_message
 # Record what is installed BEFORE touching anything, so a bad upgrade can be
 # rolled back to exact versions. Pairs with the paccache -rk2 below, which is
 # what keeps those versions available in the cache to roll back TO.
-if [ -x "$HOME/update-snapshot.sh" ]; then
-  "$HOME/update-snapshot.sh" >/dev/null 2>&1 && \
+# The script is update-snapshot.sh in arch-config and xupdate-snapshot.sh in
+# $HOME. Hardcoding one name silently skipped every snapshot from Oct 8 to 28.
+snap=""
+for s in "$HOME/update-snapshot.sh" "$HOME/xupdate-snapshot.sh"; do
+  [ -x "$s" ] && { snap="$s"; break; }
+done
+if [ -n "$snap" ]; then
+  "$snap" >/dev/null 2>&1 && \
     echo -e "\033[0;32mPre-update snapshot recorded.\033[0m" || \
     echo -e "\033[1;33mCould not record a pre-update snapshot (continuing).\033[0m"
+else
+  echo -e "\033[1;33mupdate-snapshot.sh not found -- no rollback record for this upgrade.\033[0m"
 fi
 
 # Update and upgrade packages (Arch based)

@@ -21,7 +21,6 @@ STATE="$HOME/.local/state/backup-home/last-run-partB"
 # silently reports "not present" forever. Re-label the new drive "Backup Linux"
 # and this keeps working.
 BACKUP_LABEL="${BACKUP_LABEL:-Backup Linux}"
-MOUNT="/run/media/$USER/$BACKUP_LABEL"
 WARN_DAYS="${BACKUP_WARN_DAYS:-14}"
 QUIET=0
 
@@ -92,7 +91,10 @@ say ""
 if [ -e "/dev/disk/by-label/${BACKUP_LABEL// /\\x20}" ]; then
   dev=$(readlink -f "/dev/disk/by-label/${BACKUP_LABEL// /\\x20}")
   say "  backup drive present: $dev"
-  if findmnt -no TARGET "$MOUNT" >/dev/null 2>&1; then
+  # Ask where the device is mounted rather than assuming a path: it is in fstab
+  # at /mnt/backup_linux now, not udisks' /run/media/$USER/<label>.
+  MOUNT=$(findmnt -no TARGET "$dev" 2>/dev/null | head -1)
+  if [ -n "$MOUNT" ]; then
     used=$(df -h "$MOUNT" 2>/dev/null | tail -1 | awk '{print $3" of "$2" ("$5")"}')
     say "  mounted at $MOUNT — $used"
     newest=$(find "$MOUNT/home/ekco" -maxdepth 2 -type f -printf '%T@ %TY-%Tm-%Td\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2)

@@ -89,13 +89,14 @@ echo "Keeping only the last 100MB of journal logs to free up space..."
 journalctl --vacuum-size=100M
 echo ""
 
-# --- 5. Clean up Yay/AUR Cache (if yay is installed) ---
-# This checked for 'yay', which is not installed -- paru is the AUR helper here,
-# so the branch never ran and ~/.cache/paru was never cleaned.
+# --- 5. Clean up Paru/AUR Cache ---
 if command -v paru &> /dev/null; then
     echo "--- Cleaning Paru/AUR Cache ---"
-    echo "Running 'paru -Sc' to clean the AUR build cache..."
-    sudo -u "${SUDO_USER:-ekco}" paru -Sc --noconfirm
+    # Remove leftover temporary download directories created during interrupted downloads
+    rm -rf /var/cache/pacman/pkg/download-* 2>/dev/null
+
+    echo "Running 'paru -Sc'..."
+    sudo -u "${SUDO_USER:-ekco}" -H paru -Sc --noconfirm
     echo ""
 else
     echo "Paru (AUR helper) not found. Skipping AUR cache cleanup."

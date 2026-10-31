@@ -59,6 +59,9 @@ docs/             package manifests and the restore procedure
 | `generate_audit.sh` | Generates a full system diagnostics report as Markdown. |
 | `epub-to-md.sh` | EPUB/PDF/TXT/HTML → Markdown. |
 | `mp4-to-gif.sh` | Video → GIF, auto-scaling to stay under a size limit. |
+| `download_music.sh` | Downloads a YouTube playlist to tagged MP3s with embedded cover art (yt-dlp, archive file so reruns only fetch new tracks). |
+| `fetch_album_art.sh` | Embeds cover art into MP3s that have none, from the top YouTube search result for the filename. |
+| `enhance_metadata.py` | DJ library tagger: AcoustID fingerprint, Last.fm genre, Essentia BPM and Camelot key, written to ID3 and a JSON catalogue. Needs `ACOUSTID_API_KEY` and `LASTFM_API_KEY` in the environment. |
 | `find-file.sh`, `music.sh`, `bpytop.sh`, `fastfetch-lolcat.sh` | Small conveniences. |
 | `start_dashboard.sh` / `stop_dashboard.sh` | Launch/close a four-pane kitty monitoring grid. |
 | `run_kaia.sh`, `restart_speech_dispatcher.sh` | Project-specific helpers. |
