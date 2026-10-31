@@ -12,7 +12,7 @@
 # Deliberately standalone: no dependency on the Kaia repo, no network
 # access, no Python. If Kaia is the thing that is broken, this must
 # still work. Safe to run even if the lockdown was NOT the cause --
-# it only removes Kaia's own lockdown table and reloads your firewall.
+# without a lockdown ruleset present it leaves the firewall untouched.
 #
 # Exit: 0 network restored, 1 could not restore
 # ============================================================
@@ -39,36 +39,52 @@ for unit in kaia-policy-gate.service kaia-lockdown.service; do
     fi
 done
 
-# --- 2. Remove the lockdown ruleset -----------------------------------------
-echo -e "${YELLOW}[2/5]${NC} Removing Kaia's lockdown table..."
-if nft list table inet filter >/dev/null 2>&1; then
-    # Only delete Kaia's own table. A blanket `nft flush ruleset` here would
-    # destroy whatever the firewall has legitimately loaded and make things worse.
-    nft delete table inet filter 2>/dev/null && echo "      deleted 'inet filter' (the lockdown table)" \
-        || echo -e "      ${YELLOW}could not delete it; continuing${NC}"
+# --- 2. Is a lockdown actually in place? -----------------------------------
+# Kaia's lockdown table is "inet kaia_lockdown". Older Kaia builds called it
+# "inet filter" -- the same name as the stock /etc/nftables.conf table, so this
+# script used to delete the host's real firewall whenever it was run on a healthy
+# machine. A legacy lockdown is recognised by its output chain: policy drop,
+# which no ordinary desktop ruleset uses.
+echo -e "${YELLOW}[2/5]${NC} Looking for Kaia's lockdown ruleset..."
+locked=0
+if nft list table inet kaia_lockdown >/dev/null 2>&1; then
+    locked=1; echo "      found 'inet kaia_lockdown'"
+elif nft list chain inet filter output 2>/dev/null | grep -q 'policy drop'; then
+    locked=1; echo "      found a legacy lockdown in 'inet filter' (output policy drop)"
 else
-    echo "      no lockdown table present"
+    echo "      no lockdown ruleset present -- leaving the firewall alone"
 fi
 
-# --- 3. Restore the real firewall -------------------------------------------
+# --- 3. Replace the lockdown with the real firewall -------------------------
 echo -e "${YELLOW}[3/5]${NC} Restoring the firewall..."
-restored=""
-if command -v ufw >/dev/null 2>&1; then
-    # ufw reload regenerates its ruleset authoritatively, which is safer than
-    # replaying a captured snapshot that may not match ufw's userspace state.
-    if ufw reload >/dev/null 2>&1; then
-        restored="ufw reload"
-    else
-        ufw --force enable >/dev/null 2>&1 && restored="ufw enable"
+if [ "$locked" -eq 1 ]; then
+    # The lockdown flushed everything before installing itself, so flush it and
+    # rebuild: nftables.conf first (it begins with `flush ruleset`, which would
+    # wipe ufw's tables), then ufw, then Kaia's snapshot if neither applies.
+    nft flush ruleset
+    restored=""
+    if systemctl is-enabled --quiet nftables.service 2>/dev/null \
+       && systemctl restart nftables.service 2>/dev/null; then
+        restored="nftables.service"
     fi
-fi
-if [ -z "$restored" ] && [ -f /var/lib/kaia/pre-lockdown.nft ]; then
-    nft -f /var/lib/kaia/pre-lockdown.nft 2>/dev/null && restored="pre-lockdown snapshot"
-fi
-if [ -n "$restored" ]; then
-    echo -e "      ${GREEN}restored via: $restored${NC}"
+    if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -qi '^Status: active' \
+       && ufw reload >/dev/null 2>&1; then
+        restored="${restored:+$restored + }ufw reload"
+    fi
+    if [ -z "$restored" ] && [ -f /var/lib/kaia/pre-lockdown.nft ]; then
+        nft -f /var/lib/kaia/pre-lockdown.nft 2>/dev/null && restored="pre-lockdown snapshot"
+    fi
+    if [ -n "$restored" ]; then
+        echo -e "      ${GREEN}restored via: $restored${NC}"
+    else
+        echo -e "      ${RED}no firewall restored — host is UNFIREWALLED${NC}"
+    fi
+    # The flush also dropped Kaia's recorded IP blocks.
+    systemctl restart kaia-restore-blocks.service 2>/dev/null \
+        && echo "      recorded IP blocks re-applied" \
+        || echo -e "      ${YELLOW}kaia-restore-blocks did not run (journalctl -u kaia-restore-blocks)${NC}"
 else
-    echo -e "      ${YELLOW}no firewall restored — host may be UNFIREWALLED${NC}"
+    echo "      nothing to restore"
 fi
 
 # --- 4. Nudge the network stack ---------------------------------------------

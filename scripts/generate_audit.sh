@@ -84,9 +84,14 @@ else
   pg_status="🔴 CRITICAL (postgresql.service is $pg_active)"
 fi
 
-# UFW Firewall
-ufw_active=$(sudo ufw status | grep -i "Status: active")
-[ -n "$ufw_active" ] && ufw_status="🟢 PASS (Active)" || ufw_status="🔴 CRITICAL (Inactive)"
+# Firewall: judge the kernel ruleset, not a manager's opinion of itself.
+# `ufw status` said "active" for weeks while enforcing nothing: nftables.service
+# loads /etc/nftables.conf, which begins with `flush ruleset`, 2s after ufw.
+if sudo nft list ruleset 2>/dev/null | grep -qE 'hook input .*policy drop'; then
+  ufw_status="🟢 PASS (nftables input policy drop)"
+else
+  ufw_status="🔴 CRITICAL (no input chain with policy drop)"
+fi
 
 # Failed Services
 failed_units=$(systemctl --failed --legend=no | grep -c "\.service")
@@ -254,7 +259,7 @@ cat > "$OUT" << EOF
 | **GPU & VRAM Compute** | $gpu_status | NVIDIA hardware & VRAM load state |
 | **Local AI (Ollama)** | $ollama_status | Ollama system service & socket validation |
 | **Database (PostgreSQL)** | $pg_status | Datastore accessibility check |
-| **Network & Firewall (UFW)** | $ufw_status | Host level firewall daemon |
+| **Network & Firewall** | $ufw_status | Kernel nftables ruleset (input hook) |
 | **Systemd Services** | $services_status | Failed service sweep |
 | **User Space Limits** | $limits_status | Dynamic file handle ceilings |
 | **Package Database** | $pkg_status | DB transaction locks status |
