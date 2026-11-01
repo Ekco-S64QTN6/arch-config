@@ -51,9 +51,9 @@ docs/             package manifests and the restore procedure
 |---|---|
 | `aur-guard.sh` | Audits installed AUR packages against the [aur-malware-check](https://github.com/lenucksi/aur-malware-check) IOC feed, the AUR RPC, and local PKGBUILDs. Runs weekly via timer. |
 | `drive-health.sh` | Reads the SMART attributes that actually predict failure. `smartctl -H` alone reports PASSED on drives with pending sectors. |
-| `backup-status.sh` | How stale is the backup? Reads a local stamp, so it works whether or not the backup drive is mounted. |
+| `backup-status.sh` (installed as `~/xbackup-status.sh`) | How stale is the backup? Reads a local stamp, so it works whether or not the backup drive is mounted. |
 | `backup_home.sh` | rsync the OS to a labelled backup drive. |
-| `update-snapshot.sh` | Records exact package versions before an upgrade; can generate the `pacman -U` rollback command afterwards. |
+| `update-snapshot.sh` (installed as `~/xupdate-snapshot.sh`) | Records exact package versions before an upgrade; can generate the `pacman -U` rollback command afterwards. |
 | `update-manifest.sh` | Regenerates `docs/pkglist-*.txt` and `docs/PACKAGES.md` from the live system. Run after installing or removing packages. |
 | `update-system.sh` | System upgrade. Takes a snapshot first, trims the package cache with `paccache -rk2` rather than wiping it. |
 | `clean_system.sh` | Scoped cleanup — prunes caches and old files, with confirmation, never a blind recursive delete. |

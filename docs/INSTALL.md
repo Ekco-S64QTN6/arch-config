@@ -149,7 +149,7 @@ sudo systemctl restart systemd-journald systemd-resolved
 ```bash
 ~/aur-guard.sh            # AUR supply-chain audit
 sudo ~/drive-health.sh    # SMART attributes on every disk
-~/backup-status.sh        # backup freshness
+~/xbackup-status.sh       # backup freshness (x- prefix keeps tab-completion of backup_home.sh unique)
 systemctl --failed        # should be empty
 systemd-analyze           # boot time
 ```
