@@ -76,7 +76,7 @@ echo -e "${YELLOW}installing a replacement for the failed Steam drive.${NC}\n"
 #   for DIR in Documents Music Pictures Videos; do
 #     echo -e "${YELLOW}Syncing ${DIR}...${NC}"
 #     rsync -av --progress --delete-after --ignore-errors \
-#       "$HOME/$DIR/" "$STEAM/$DIR/"
+#       "$HOME_DIR/$DIR/" "$STEAM/$DIR/"
 #     echo -e "${GREEN}✓ ${DIR} done${NC}\n"
 #   done
 # else
@@ -92,44 +92,8 @@ echo -e "${CYAN}  PART B: NVMe OS → sdb2 Fallback Sync${NC}"
 echo -e "${CYAN}═══════════════════════════════════════${NC}\n"
 
 if check_mount "$SDB2" "sdb2 fallback drive"; then
-  # Logical dump of kaiadb first. rsync of /var/lib/postgres while the server
-  # is running copies data files mid-write -- that copy may not start. A
-  # pg_dump is transactionally consistent; it lands in ~ so the sync carries it.
-  # Restore: createdb -U postgres kaiadb && pg_restore -U postgres -d kaiadb <file>
-  DUMP_DIR="$HOME/.local/state/backup-home"
-  mkdir -p "$DUMP_DIR"
-  if pg_dump -U postgres -Fc kaiadb -f "$DUMP_DIR/kaiadb.dump.tmp" &&
-     pg_dumpall -U postgres --globals-only -f "$DUMP_DIR/pg-globals.sql"; then
-    mv "$DUMP_DIR/kaiadb.dump.tmp" "$DUMP_DIR/kaiadb.dump"
-    chmod 600 "$DUMP_DIR/kaiadb.dump" "$DUMP_DIR/pg-globals.sql"
-    echo -e "${GREEN}✓ kaiadb dumped${NC}"
-  else
-    rm -f "$DUMP_DIR/kaiadb.dump.tmp"
-    echo -e "${RED}✗ pg_dump failed — kaiadb only covered by the raw (unsafe) file copy${NC}"
-  fi
-
   echo -e "${YELLOW}Syncing OS to sdb2 fallback...${NC}"
-  # ~/github used to be excluded wholesale ("it's on GitHub"), but gitignored
-  # data -- GNN assets, Kaia storage/, Kaiacord knowledge_base, Kaiagotchi
-  # pcaps, ~3.5G -- plus non-git folders and uncommitted work exist nowhere
-  # else. Exclude only what rebuilds from source. Patterns are anchored under
-  # ~/github: a bare 'venv/' would also drop /usr/lib/python3.*/venv.
-  # Dungeon Hack+ builds are ~26M each and regenerate with dhplus.py; keep only
-  # each build's saves and the files that say how to rebuild it identically.
-  DH="$HOME/github/Dungeon Hack+/build"
-  # Kaia honeypot decoys and canary flags: every read of them raises an alert,
-  # so the backup must never open them (Kaia's installer recreates them).
   sudo rsync -aAXHv --progress --delete-after \
-    --include="$DH/*/" \
-    --include="$DH/*/savegame/***" \
-    --include="$DH/*/MIX.TXT" \
-    --include="$DH/*/MASHUP_BUILD.json" \
-    --exclude="$DH/*/*" \
-    --exclude=/etc/api_keys.json \
-    --exclude=/var/backups/credentials.txt \
-    --exclude=/root/root.txt \
-    --exclude=/root/.ssh/authorized_keys.bak \
-    --exclude="$HOME/flag.txt" \
     --exclude=/dev \
     --exclude=/proc \
     --exclude=/sys \
@@ -138,15 +102,10 @@ if check_mount "$SDB2" "sdb2 fallback drive"; then
     --exclude=/mnt \
     --exclude=/lost+found \
     --exclude=/var/cache/pacman/pkg \
-    --exclude="$HOME/.cache" \
-    --exclude="$HOME/Games" \
-    --exclude="$HOME/venv" \
-    --exclude="$HOME/github/**/venv/" \
-    --exclude="$HOME/github/**/.venv/" \
-    --exclude="$HOME/github/**/node_modules/" \
-    --exclude="$HOME/github/**/__pycache__/" \
-    --exclude="$HOME/github/Kaiacord/finetune/llama.cpp/" \
-    --exclude="$HOME/github/GNN/trailer/build/" \
+    --exclude=/home/ekco/.cache \
+    --exclude=/home/ekco/Games \
+    --exclude=/home/ekco/github \
+    --exclude=/home/ekco/venv \
     / "$SDB2/"
   rsync_rc=$?
 
