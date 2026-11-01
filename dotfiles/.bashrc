@@ -40,13 +40,16 @@ export VISUAL=nano
 # even when the system profile has already put an entry further down the list.
 _path_prepend() {
     local d="$1" p=":${PATH}:"
-    p="${p//:$d:/:}"
+    # Loop: adjacent copies (":d:d:") share a colon, so one global replace
+    # only removes every other one.
+    while [[ $p == *":$d:"* ]]; do p="${p//:$d:/:}"; done
     p="${p#:}"; p="${p%:}"
     PATH="$d${p:+:$p}"
 }
 _path_prepend "$HOME/.local/share/flatpak/exports/bin"
 _path_prepend "/var/lib/flatpak/exports/bin"
 _path_prepend "$HOME/.cargo/bin"
+_path_prepend "$HOME/.npm-global/bin"
 _path_prepend "$HOME/.local/bin"
 _path_prepend "/opt/cuda/bin"
 export PATH
@@ -154,6 +157,3 @@ if [[ $- == *i* ]]; then
     #  manager on this machine and ~/.xinitrc does not exist, so if it had ever
     #  fired it would have dropped you into a bare X session or just failed.)
 fi
-
-
-

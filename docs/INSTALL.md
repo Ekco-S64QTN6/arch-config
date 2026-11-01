@@ -41,7 +41,7 @@ paru -S --needed - < docs/pkglist-aur-explicit.txt
 ```bash
 sudo pacman -S --needed flatpak
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-xargs -a docs/pkglist-flatpak.txt flatpak install -y flathub
+cut -f1 docs/pkglist-flatpak.txt | xargs flatpak install -y flathub
 ```
 
 ---
@@ -105,8 +105,11 @@ hardware. Read them, then apply what applies.
 | `sysctl.d/99-kaia-memory.conf` | `vm.max_map_count` — needed by some games and Proton | Yes |
 | `udev-rules.d/60-ioschedulers.rules` | `none` for NVMe, `bfq` for SATA SSDs | Yes — it is subsystem-scoped, so it will not spam your journal |
 | `modprobe.d/nct6775.conf` | Forces the hwmon chip ID | **No** — ASUS B650 specific |
-| `modprobe.d/nvidia-gsp.conf` | Disables GSP firmware | **No** — review; unsupported with `nvidia-open-dkms` |
-| `systemd/nvidia-performance.service` | Pins GPU clocks | **No** — GPU specific |
+| `systemd/nvidia-performance.service` | NVIDIA persistence mode only. Clocks are no longer pinned: the old `-lgc 2145,2145` held the card at ~45 W idle for no documented gain | Yes, on any NVIDIA card |
+| `sysctl.d/98-zram.conf` | `swappiness=180`, `page-cluster=0` and watermark tuning for zram swap (Arch wiki values) | Yes, if using zram |
+| `systemd/zram-generator.conf` | Default zram swap device (`min(ram/2, 4G)`, zstd) | Yes |
+| `systemd/coredump.conf.d/10-coredump-cap.conf` | Keeps full-size dumps for debugging but caps storage at 2G | Yes |
+| `systemd/ollama.service.d/*.conf` | Flash attention + q8_0 KV cache (halves VRAM for Kaia's context); `nvidia-modprobe` before start so CUDA device nodes exist at boot | Yes, with `ollama-cuda` |
 | `systemd/journald.conf.d/00-size-cap.conf` | Caps the journal at 500M | Yes |
 | `systemd/resolved.conf.d/10-no-llmnr.conf` | Disables LLMNR, keeps mDNS | Yes |
 | `mkinitcpio.conf`, `grub.default` | Boot configuration | **No** — read carefully, regenerate rather than copy |
@@ -116,7 +119,8 @@ Applying the safe ones:
 ```bash
 sudo cp system/sysctl.d/*.conf         /etc/sysctl.d/
 sudo cp system/udev-rules.d/*.rules    /etc/udev/rules.d/
-sudo cp -r system/systemd/journald.conf.d system/systemd/resolved.conf.d /etc/systemd/
+sudo cp -r system/systemd/journald.conf.d system/systemd/resolved.conf.d system/systemd/coredump.conf.d /etc/systemd/
+sudo cp system/systemd/zram-generator.conf /etc/systemd/
 sudo sysctl --system
 sudo udevadm control --reload-rules
 sudo systemctl restart systemd-journald systemd-resolved

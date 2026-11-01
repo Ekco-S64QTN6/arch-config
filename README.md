@@ -52,8 +52,9 @@ docs/             package manifests and the restore procedure
 | `aur-guard.sh` | Audits installed AUR packages against the [aur-malware-check](https://github.com/lenucksi/aur-malware-check) IOC feed, the AUR RPC, and local PKGBUILDs. Runs weekly via timer. |
 | `drive-health.sh` | Reads the SMART attributes that actually predict failure. `smartctl -H` alone reports PASSED on drives with pending sectors. |
 | `backup-status.sh` | How stale is the backup? Reads a local stamp, so it works whether or not the backup drive is mounted. |
-| `backup_home.sh` | rsync the OS to a labelled backup drive. |
+| `backup_home.sh` | `pg_dump`s kaiadb, then rsyncs the OS to the backup drive — `~/github` included, minus venvs, `node_modules` and build trees. |
 | `update-snapshot.sh` | Records exact package versions before an upgrade; can generate the `pacman -U` rollback command afterwards. |
+| `update-manifest.sh` | Regenerates `docs/pkglist-*.txt` and `docs/PACKAGES.md` from the live system. Run after installing or removing packages. |
 | `update-system.sh` | System upgrade. Takes a snapshot first, trims the package cache with `paccache -rk2` rather than wiping it. |
 | `clean_system.sh` | Scoped cleanup — prunes caches and old files, with confirmation, never a blind recursive delete. |
 | `generate_audit.sh` | Generates a full system diagnostics report as Markdown. |
@@ -79,7 +80,7 @@ cd arch-config
 # packages
 sudo pacman -S --needed - < docs/pkglist-repo-explicit.txt
 paru      -S --needed - < docs/pkglist-aur-explicit.txt
-xargs -a docs/pkglist-flatpak.txt flatpak install -y flathub
+cut -f1 docs/pkglist-flatpak.txt | xargs flatpak install -y flathub
 
 # dotfiles
 cp -a dotfiles/.[!.]* ~/
@@ -118,11 +119,11 @@ This repo is public. The following are excluded on purpose:
   The `kitty.conf` here uses the **NF** (Nerd Font, AutoHint) build —
   hinted is the right choice at ≤1080p; unhinted is for HiDPI.
 - `system/sysctl.d/60-oom-hardening.conf` sets `vm.panic_on_oom = 0`
-  deliberately. The kernel default of panicking on OOM turns a recoverable
-  event into a reboot on a desktop.
-- The icon theme is Sweet-Rainbow, which works almost entirely through
-  inheritance — several AUR icon packages in the manifest are its fallbacks,
-  not cruft.
+  deliberately. `0` is the kernel default; an earlier version of this file set
+  it to `1`, which turns a recoverable OOM into a kernel panic and reboot.
+- The icon theme is candy-icons with Sweet cursors. Sweet-Rainbow (the previous
+  theme) is still in `~/.local/share/icons`; several AUR icon packages in the
+  manifest are its inheritance fallbacks, needed only if switching back.
 
 ---
 

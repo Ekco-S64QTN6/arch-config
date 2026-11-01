@@ -1,13 +1,13 @@
-com.discordapp.Discord
-com.github.PintaProject.Pinta
-com.google.Chrome
-com.heroicgameslauncher.hgl
-com.obsproject.Studio
-com.vysp3r.ProtonPlus
-io.github.seadve.Kooha
-io.mpv.Mpv
-net.davidotek.pupgui2
-net.lutris.Lutris
-org.chromium.Chromium
-org.garudalinux.firedragon
-org.kde.kdenlive
+com.discordapp.Discord	Discord
+com.github.PintaProject.Pinta	Pinta
+com.google.Chrome	Google Chrome
+com.heroicgameslauncher.hgl	Heroic
+com.obsproject.Studio	OBS Studio
+com.vysp3r.ProtonPlus	ProtonPlus
+io.github.seadve.Kooha	Kooha
+net.davidotek.pupgui2	ProtonUp-Qt
+net.lutris.Lutris	Lutris
+org.chromium.Chromium	Chromium Web Browser
+org.garudalinux.firedragon	FireDragon
+org.ghidra_sre.Ghidra	Ghidra
+org.kde.kdenlive	Kdenlive

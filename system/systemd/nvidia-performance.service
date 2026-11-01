@@ -1,11 +1,10 @@
 [Unit]
-Description=Lock Nvidia GPU to performance clocks
+Description=Nvidia persistence mode
 After=multi-user.target
 
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/nvidia-smi -pm 1
-ExecStart=/usr/bin/nvidia-smi -lgc 2145,2145
 RemainAfterExit=yes
 
 [Install]

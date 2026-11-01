@@ -8,7 +8,7 @@ gtk-button-images=1
 gtk-cursor-blink-time=1000
 gtk-cursor-blink=1
 gtk-cursor-theme-size=24
-gtk-cursor-theme-name="breeze_cursors"
+gtk-cursor-theme-name="Sweet-cursors"
 gtk-sound-theme-name="ocean"
-gtk-icon-theme-name="Sweet-Rainbow"
+gtk-icon-theme-name="candy-icons"
 

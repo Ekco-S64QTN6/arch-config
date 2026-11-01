@@ -1,9 +1,10 @@
 1oom-git
+chirp-next
 chkrootkit
-claude-code
 dwarffortress-linuxdwarfpack-appimage
 gnome-icon-theme
 gtk2
+k5prog-git
 lib32-giflib
 lib32-gtk2
 lib32-openal
@@ -12,8 +13,8 @@ lib32-v4l-utils
 maplemono-nf
 maplemono-ttf
 metropolis
+mpv-uosc-git
 paru
 python312
 ubuntu-themes
-unimatrix-git
 ventoy-bin
