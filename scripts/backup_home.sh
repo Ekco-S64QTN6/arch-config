@@ -117,12 +117,19 @@ if check_mount "$SDB2" "sdb2 fallback drive"; then
   # Dungeon Hack+ builds are ~26M each and regenerate with dhplus.py; keep only
   # each build's saves and the files that say how to rebuild it identically.
   DH="$HOME/github/Dungeon Hack+/build"
+  # Kaia honeypot decoys and canary flags: every read of them raises an alert,
+  # so the backup must never open them (Kaia's installer recreates them).
   sudo rsync -aAXHv --progress --delete-after \
     --include="$DH/*/" \
     --include="$DH/*/savegame/***" \
     --include="$DH/*/MIX.TXT" \
     --include="$DH/*/MASHUP_BUILD.json" \
     --exclude="$DH/*/*" \
+    --exclude=/etc/api_keys.json \
+    --exclude=/var/backups/credentials.txt \
+    --exclude=/root/root.txt \
+    --exclude=/root/.ssh/authorized_keys.bak \
+    --exclude="$HOME/flag.txt" \
     --exclude=/dev \
     --exclude=/proc \
     --exclude=/sys \
