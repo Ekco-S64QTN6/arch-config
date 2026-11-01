@@ -114,7 +114,15 @@ if check_mount "$SDB2" "sdb2 fallback drive"; then
   # pcaps, ~3.5G -- plus non-git folders and uncommitted work exist nowhere
   # else. Exclude only what rebuilds from source. Patterns are anchored under
   # ~/github: a bare 'venv/' would also drop /usr/lib/python3.*/venv.
+  # Dungeon Hack+ builds are ~26M each and regenerate with dhplus.py; keep only
+  # each build's saves and the files that say how to rebuild it identically.
+  DH="$HOME/github/Dungeon Hack+/build"
   sudo rsync -aAXHv --progress --delete-after \
+    --include="$DH/*/" \
+    --include="$DH/*/savegame/***" \
+    --include="$DH/*/MIX.TXT" \
+    --include="$DH/*/MASHUP_BUILD.json" \
+    --exclude="$DH/*/*" \
     --exclude=/dev \
     --exclude=/proc \
     --exclude=/sys \
