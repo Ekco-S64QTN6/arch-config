@@ -117,6 +117,7 @@ hardware. Read them, then apply what applies.
 | `systemd/journald.conf.d/00-size-cap.conf` | Caps the journal at 500M | Yes |
 | `systemd/resolved.conf.d/10-no-llmnr.conf` | Disables LLMNR, keeps mDNS | Yes |
 | `mkinitcpio.conf`, `grub.default` | Boot configuration | **No** — read carefully, regenerate rather than copy |
+| `mkinitcpio.conf.d/90-no-kms.conf` → `/etc/mkinitcpio.conf.d/` | Drops the `kms` hook: nouveau is blacklisted and both monitors are on the proprietary nvidia driver, so it only packed ~140 MB of unused nouveau/amdgpu firmware (initramfs 153 MB → 13 MB) | Only with the proprietary NVIDIA driver driving the displays; then `sudo mkinitcpio -P` |
 
 Applying the safe ones:
 
