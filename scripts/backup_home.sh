@@ -105,6 +105,7 @@ if check_mount "$SDB2" "sdb2 fallback drive"; then
     --exclude=/home/ekco/.cache \
     --exclude=/home/ekco/Games \
     --exclude=/home/ekco/github \
+    --exclude=/home/ekco/Offline \
     --exclude=/home/ekco/venv \
     / "$SDB2/"
   rsync_rc=$?
