@@ -110,6 +110,10 @@ hardware. Read them, then apply what applies.
 | `systemd/zram-generator.conf` | Default zram swap device (`min(ram/2, 4G)`, zstd) | Yes |
 | `systemd/coredump.conf.d/10-coredump-cap.conf` | Keeps full-size dumps for debugging but caps storage at 2G | Yes |
 | `systemd/ollama.service.d/*.conf` | Flash attention + q8_0 KV cache (halves VRAM for Kaia's context); `nvidia-modprobe` before start so CUDA device nodes exist at boot | Yes, with `ollama-cuda` |
+| `sysctl.d/51-kaia-redirects.conf` | Refuses ICMP redirects (v4+v6), sends none; `kptr_restrict=1` (root/BCC unaffected) | Yes |
+| `sysctl.d/60-split-lock.conf` | `split_lock_mitigate=0` — stops the kernel throttling games/Steam that split-lock | Yes, gaming desktops |
+| `systemd/ollama.service.d/log-filter.conf` | Drops the `/api/ps` poll lines (~57k/day from Kaiacord's stats poller) from the journal | Yes |
+| `reflector/reflector.conf` → `/etc/xdg/reflector/` | US https mirrors, 10 fastest by measured rate | Change `--country` if not in the US |
 | `systemd/journald.conf.d/00-size-cap.conf` | Caps the journal at 500M | Yes |
 | `systemd/resolved.conf.d/10-no-llmnr.conf` | Disables LLMNR, keeps mDNS | Yes |
 | `mkinitcpio.conf`, `grub.default` | Boot configuration | **No** — read carefully, regenerate rather than copy |

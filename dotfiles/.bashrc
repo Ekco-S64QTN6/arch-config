@@ -91,7 +91,7 @@ if [[ $- == *i* ]]; then
     eval "$(zoxide init bash)"
 
     # Core Aliases
-    alias lnp="~/github/dwarffortress/startlnp.sh"
+    alias lnp="/opt/dwarffortress-linuxdwarfpack-appimage/Dwarf_Fortress-0.47.05-r8-x86_64.AppImage"
     alias ls='ls --color=auto'
     alias ll='ls -la'
     alias la='ls -A'

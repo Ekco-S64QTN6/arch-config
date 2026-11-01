@@ -104,7 +104,9 @@ This repo is public. The following are excluded on purpose:
 - **Credentials.** Database and API secrets live in `~/.config/kaia/env` (mode
   `0600`), which `.bashrc` sources only if present. A fresh checkout works
   without it. Nothing here contains a password.
-- **SSH and GPG keys**, `~/.ssh`, `~/.gnupg`.
+- **SSH and GPG keys**, `~/.ssh`, `~/.gnupg`. The SSH key's passphrase lives in
+  KDE Wallet (`ksshaskpass` folder); `dotfiles/config/environment.d/ssh-agent.conf`
+  wires the systemd `ssh-agent.socket` + ksshaskpass so it unlocks at login.
 - **Disk UUIDs and serials.** No `fstab`, no disk-specific udev rules. Scripts
   discover drives by filesystem *label* so they survive a disk replacement.
 - **MAC addresses.** No `systemd/network/*.link` files.
