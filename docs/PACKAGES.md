@@ -1,11 +1,11 @@
 # Package Manifest
 
-Generated 2026-11-01 on Arch Linux, kernel 7.2.11-arch1-1 by `scripts/update-manifest.sh`.
+Generated 2026-11-07 on Arch Linux, kernel 6.18.60-1-lts by `scripts/update-manifest.sh`.
 
 Machine-readable lists live alongside this file:
 `pkglist-repo-explicit.txt`, `pkglist-aur-explicit.txt`, `pkglist-flatpak.txt`.
 
-## Repository packages (187 explicit)
+## Repository packages (192 explicit)
 
 ```bash
 sudo pacman -S --needed - < pkglist-repo-explicit.txt
@@ -15,19 +15,20 @@ sudo pacman -S --needed - < pkglist-repo-explicit.txt
 
 ```
 adobe-source-han-sans-jp-fonts adobe-source-han-serif-jp-fonts aircrack-ng 
-alsa-plugins alsa-utils amd-ucode arch-install-scripts ark base base-devel 
-bash-completion bat bluez-utils bpf bpytop btop chromaprint chromium cmake 
-cpupower cuda cudnn dkms dolphin dosfstools efibootmgr electron39 
-elementary-icon-theme ethtool fastfetch flameshot fluidsynth fzf gamemode git 
-github-cli goverlay gparted gqrx grub gst-plugin-pipewire gst-plugins-good 
-hashcat hcxtools hdparm htop imagemagick iotop irssi iw iwd jq kate kitty 
-kwalletmanager lib32-alsa-lib lib32-alsa-plugins lib32-gamemode lib32-gnutls 
-lib32-gtk3 lib32-libpng lib32-libpulse lib32-libva lib32-libxcomposite 
-lib32-libxinerama lib32-mesa lib32-ocl-icd lib32-sqlite 
-lib32-vulkan-icd-loader libappimage libpulse libva-nvidia-driver linux 
-linux-firmware linux-headers liquidctl lolcat mpv mtr nano net-tools 
-networkmanager network-manager-applet nmap noto-fonts-cjk npm ntfs-3g 
-ntfsprogs nvidia-open-dkms nvidia-settings nvme-cli ollama ollama-cuda openal 
+alsa-plugins alsa-utils amd-ucode arch-install-scripts arch-wiki-docs 
+arch-wiki-lite ark base base-devel bash-completion bat bluez-utils bpf bpytop 
+btop chromaprint chromium cmake cpupower cuda cudnn dkms dolphin dosfstools 
+efibootmgr electron39 elementary-icon-theme ethtool fastfetch flameshot 
+fluidsynth fzf gamemode git github-cli goverlay gparted gqrx grub 
+gst-plugin-pipewire gst-plugins-good hashcat hcxtools hdparm htop imagemagick 
+iotop irssi iw iwd jq kate kitty kiwix-desktop kwalletmanager lib32-alsa-lib 
+lib32-alsa-plugins lib32-gamemode lib32-gnutls lib32-gtk3 lib32-libpng 
+lib32-libpulse lib32-libva lib32-libxcomposite lib32-libxinerama lib32-mesa 
+lib32-ocl-icd lib32-sqlite lib32-vulkan-icd-loader libappimage libpulse 
+libva-nvidia-driver linux linux-firmware linux-headers linux-lts 
+linux-lts-headers liquidctl lolcat mpv mtr nano net-tools networkmanager 
+network-manager-applet nmap noto-fonts-cjk npm ntfs-3g ntfsprogs 
+nvidia-open-dkms nvidia-settings nvme-cli ollama ollama-cuda openal 
 openbsd-netcat os-prober pacman-contrib pandoc-cli perf pipewire 
 pipewire-alsa pipewire-pulse pipewire-session-manager plasma-meta 
 plasma-workspace postgresql python-aiohttp python-bcc python-beautifulsoup4 

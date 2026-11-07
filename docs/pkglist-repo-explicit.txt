@@ -5,6 +5,8 @@ alsa-plugins
 alsa-utils
 amd-ucode
 arch-install-scripts
+arch-wiki-docs
+arch-wiki-lite
 ark
 base
 base-devel
@@ -52,6 +54,7 @@ iwd
 jq
 kate
 kitty
+kiwix-desktop
 kwalletmanager
 lib32-alsa-lib
 lib32-alsa-plugins
@@ -73,6 +76,8 @@ libva-nvidia-driver
 linux
 linux-firmware
 linux-headers
+linux-lts
+linux-lts-headers
 liquidctl
 lolcat
 mpv

@@ -66,6 +66,7 @@ docs/             package manifests and the restore procedure
 | `find-file.sh`, `music.sh`, `bpytop.sh`, `fastfetch-lolcat.sh` | Small conveniences. |
 | `start_dashboard.sh` / `stop_dashboard.sh` | Launch/close a four-pane kitty monitoring grid. |
 | `run_kaia.sh`, `restart_speech_dispatcher.sh` | Project-specific helpers. |
+| `play-eq.sh` | One-click Project 1999: starts EverQuest through Lutris plus the [Ekco Parse](https://github.com/Ekco-S64QTN6/EkcoParse) click-through HUD, skipping either if already running. Placement comes from KWin window rules. |
 
 All scripts pass `shellcheck` clean.
 
